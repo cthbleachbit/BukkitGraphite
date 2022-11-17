@@ -1,0 +1,20 @@
+name: 'BukkitGraphite'
+version: 0.0.5
+author: 'cth451'
+description: 'Graphite protocol agent for Bukkit based Minecraft server'
+main: me.cth451.bukkitgraphite.PluginMain
+api-version: 1.18
+commands:
+  graphite-reload:
+    description: |
+      Reload config from disk
+    permission: "bukkitgraphite.reload"
+permissions:
+  bukkitgraphite.*:
+    description: "Gives access to all PaperFrame commands"
+    default: false
+    children:
+      bukkitgraphite.reload: true
+  bukkitgraphite.reload:
+    description: "Allow use of /graphite-reload"
+    default: op
