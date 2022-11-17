@@ -1,5 +1,5 @@
 package me.cth451.bukkitgraphite.metric.test;
-import me.cth451.bukkitgraphite.metric.MetricPath;
+import me.cth451.bukkitgraphite.metric.model.MetricPath;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -10,7 +10,7 @@ public class MetricTest {
     @Test
     public void testNoTagMetricPath() {
         MetricPath path = new MetricPath("minecraft.server", null);
-        assertEquals("minecraft.server", path.toString());
+        assertEquals("minecraft.server", path.toGraphite());
     }
 
     @Test
@@ -22,6 +22,6 @@ public class MetricTest {
         MetricPath path = new MetricPath("minecraft.player.active", tags);
         String possible1 = "minecraft.player.active;world=minecraft:overworld;gamemode=creative";
         String possible2 = "minecraft.player.active;gamemode=creative;world=minecraft:overworld";
-        assertTrue(possible1.equals(path.toString()) || possible2.equals(path.toString()));
+        assertTrue(possible1.equals(path.toGraphite()) || possible2.equals(path.toGraphite()));
     }
 }

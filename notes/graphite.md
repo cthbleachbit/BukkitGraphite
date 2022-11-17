@@ -24,8 +24,10 @@ Assuming the following keys extend namespace `minecraft.`. This can be changed i
 
 ### Server performance statistics `server`
 
-| Key                   | What                                                 |
-|-----------------------|------------------------------------------------------|
-| `tps`                 | Ticks per second - averaged between report intervals |
-| `entity;world=$world` | Active number of entities loaded in `$world`         |
-| `chunk;world=$world`  | Active number of chunks loaded in `$world`           |
+| Key                         | What                                                 |
+|-----------------------------|------------------------------------------------------|
+| `tps`                       | Ticks per second - averaged between report intervals |
+| `mstp`                      | Milliseconds per tick                                |
+| `entity;world=$world`       | Active number of entities loaded in `$world`         |
+| `chunk.loaded;world=$world` | Active number of chunks loaded in `$world`           |
+| `chunk.pinned;world=$world` | Active number of chunks pinned in `$world`           |
