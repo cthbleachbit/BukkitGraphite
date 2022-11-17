@@ -1,0 +1,4 @@
+# Graphite metric hierarchy. Keys will be derived by appending to this key
+graphite-metric-root: minecraft
+
+# Graphite Endpoint
