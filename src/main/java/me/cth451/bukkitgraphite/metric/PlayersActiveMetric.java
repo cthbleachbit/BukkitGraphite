@@ -6,6 +6,7 @@ import me.cth451.bukkitgraphite.metric.model.MetricPath;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -67,5 +68,15 @@ public class PlayersActiveMetric implements MetricGroup {
 	@Override
 	public String id() {
 		return "player_active";
+	}
+
+	/**
+	 * This metric group does not have configurable elements.
+	 * @param section   metric group specific configuration section
+	 * @return true
+	 */
+	@Override
+	public boolean configure(ConfigurationSection section) {
+		return true;
 	}
 }

@@ -2,6 +2,7 @@ package me.cth451.bukkitgraphite.metric;
 
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import me.cth451.bukkitgraphite.metric.model.MetricGroup;
+import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -35,5 +36,15 @@ public class JavaRuntimeMetric implements MetricGroup {
 	@Override
 	public String id() {
 		return "runtime";
+	}
+
+	/**
+	 * This metric group does not have configurable elements.
+	 * @param section   metric group specific configuration section
+	 * @return true
+	 */
+	@Override
+	public boolean configure(ConfigurationSection section) {
+		return true;
 	}
 }

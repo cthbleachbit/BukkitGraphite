@@ -14,8 +14,8 @@ public class PluginMain extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		UpdaterManager manager = new UpdaterManager(this);
-		//manager.registerUpdater(new ConsoleUpdater());
-		manager.registerUpdater(new GraphiteUpdater("127.0.0.1", 2003));
+		manager.registerUpdater(new ConsoleUpdater());
+		manager.registerUpdater(new GraphiteUpdater());
 		manager.registerMetric(new ServerLoadedMetric());
 		manager.registerMetric(new ServerTpsMetric());
 		manager.registerMetric(new PlayersActiveMetric());

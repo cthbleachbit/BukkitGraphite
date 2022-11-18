@@ -20,8 +20,9 @@ public record MetricEntry(String key, Map<String, String> tags, Double value, In
 	 *
 	 * @return plain text metric in graphite plain text format
 	 */
-	public String toGraphite() {
-		return new MetricPath(key(),
-		                      tags()).toGraphite() + " " + value().toString() + " " + timestamp().getEpochSecond();
+	public String toGraphite(String namespace) {
+		String namespacedKey = (namespace == null | namespace.isEmpty()) ? key() : namespace + "." + key();
+		String pathString = new MetricPath(namespacedKey,tags()).toGraphite();
+		return pathString + " " + value().toString() + " " + timestamp().getEpochSecond();
 	}
 }
