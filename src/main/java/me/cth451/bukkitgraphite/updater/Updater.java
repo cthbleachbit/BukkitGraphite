@@ -11,7 +11,7 @@ import java.util.List;
  * Bare minimum APIs defining interface to a logging protocol for use with some remote metric service
  */
 public abstract class Updater {
-	protected Plugin plugin;
+	protected final Plugin plugin;
 
 	protected Updater(Plugin plugin) {
 		this.plugin = plugin;

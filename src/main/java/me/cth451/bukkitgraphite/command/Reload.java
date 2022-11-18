@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 public class Reload implements CommandExecutor {
-	private PluginMain plugin;
+	private final PluginMain plugin;
 
 	public Reload(PluginMain plugin) {
 		this.plugin = plugin;
