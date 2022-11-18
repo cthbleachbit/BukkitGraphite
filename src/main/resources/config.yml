@@ -1,16 +1,14 @@
 # Which updaters to enable
 updaters:
-  - graphite
-disabled-updaters:
-  - console
+  graphite: false
+  console: false
 
 # Which metric groups to enable
 metric-groups:
-  - runtime
-  - player-active
-  - server-chunk-entity
-  - server-tps
-disabled-metric-groups:
+  runtime: true
+  player-active: true
+  server-chunk-entity: true
+  server-tps: true
 
 # Options section
 options:

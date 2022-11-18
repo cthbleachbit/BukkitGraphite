@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
@@ -120,11 +121,23 @@ public class UpdaterManager implements Runnable {
 	}
 
 	private @NotNull List<String> retrieveEnabledUpdaters() {
-		return this.plugin.getConfig().getStringList("updaters");
+		ConfigurationSection conf = this.plugin.getConfig().getConfigurationSection("updaters");
+		if (conf == null) {
+			return new LinkedList<>();
+		}
+		return knownUpdaters.keySet().stream()
+		                    .filter(k -> conf.getBoolean(k, false))
+		                    .toList();
 	}
 
 	private @NotNull List<String> retrieveEnabledMetricGroups() {
-		return this.plugin.getConfig().getStringList("metric-groups");
+		ConfigurationSection conf = this.plugin.getConfig().getConfigurationSection("metric-groups");
+		if (conf == null) {
+			return new LinkedList<>();
+		}
+		return knownMetricGroups.keySet().stream()
+		                        .filter(k -> conf.getBoolean(k, false))
+		                        .toList();
 	}
 
 	/**
@@ -139,6 +152,24 @@ public class UpdaterManager implements Runnable {
 		List<String> metricGroupsToEnable = retrieveEnabledMetricGroups();
 
 		unregisterAll();
+
+		if (updatersToEnable.isEmpty()) {
+			String message = "No updater enabled?";
+			if (p == null) {
+				plugin.getLogger().warning(message);
+			} else {
+				p.sendMessage(message);
+			}
+		}
+
+		if (metricGroupsToEnable.isEmpty()) {
+			String message = "No metric group enabled?";
+			if (p == null) {
+				plugin.getLogger().warning(message);
+			} else {
+				p.sendMessage(message);
+			}
+		}
 
 		configurationLock.lock();
 		updatersToEnable.forEach(

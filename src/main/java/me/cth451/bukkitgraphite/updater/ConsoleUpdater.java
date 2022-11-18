@@ -13,7 +13,7 @@ import java.util.List;
 public class ConsoleUpdater extends Updater {
 	public static String ID = "console";
 
-	protected ConsoleUpdater(Plugin plugin) {
+	public ConsoleUpdater(Plugin plugin) {
 		super(plugin);
 	}
 
