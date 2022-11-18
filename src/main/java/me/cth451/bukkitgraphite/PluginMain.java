@@ -5,16 +5,21 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class PluginMain extends JavaPlugin {
+	private UpdaterManager manager = null;
+
 	@Override
 	public void onEnable() {
 		this.saveDefaultConfig();
-		UpdaterManager manager = new UpdaterManager(this);
-		manager.reloadFromConfig();
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, manager, 0, 40);
+		this.reloadConfig();
+		this.saveConfig();
+		manager = new UpdaterManager(this);
+		manager.reloadComponentsFromConfig();
+		manager.start();
 	}
 
 	@Override
 	public void onDisable() {
+		manager.stop();
 		Bukkit.getScheduler().cancelTasks(this);
 	}
 }

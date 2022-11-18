@@ -6,6 +6,7 @@ import me.cth451.bukkitgraphite.metric.ServerLoadedMetric;
 import me.cth451.bukkitgraphite.metric.ServerTpsMetric;
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import me.cth451.bukkitgraphite.metric.model.MetricGroup;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -18,13 +19,13 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class UpdaterManager implements Runnable {
-	public static String UPDATER_PACKAGE = "me.cth451.bukkitgraphite.updater";
-	public static String METRIC_PACKAGE = "me.cth451.bukkitgraphite.metric";
 
 	private final Plugin plugin;
 	private final ReentrantLock configurationLock;
 	private final HashMap<String, Updater> updaters;
 	private final HashMap<String, MetricGroup> metricGroups;
+	private int updateIntervalTicks = 20;
+	private Integer updaterTaskId = null;
 
 	private static final Map<String, Class<? extends Updater>> knownUpdaters =
 			Map.ofEntries(
@@ -130,7 +131,7 @@ public class UpdaterManager implements Runnable {
 	 * <p>
 	 * This function assumes configuration has been reloaded from disk before here.
 	 */
-	public void reloadFromConfig() {
+	public void reloadComponentsFromConfig() {
 		List<String> updatersToEnable = retrieveEnabledUpdaters();
 		List<String> metricGroupsToEnable = retrieveEnabledMetricGroups();
 
@@ -147,6 +148,8 @@ public class UpdaterManager implements Runnable {
 						         NoSuchMethodException e) {
 							plugin.getLogger().severe("Cannot initialize updater id " + id);
 						}
+					} else {
+						plugin.getLogger().warning("Unknown updater: " + id);
 					}
 				}
 		);
@@ -160,9 +163,12 @@ public class UpdaterManager implements Runnable {
 						         NoSuchMethodException e) {
 							plugin.getLogger().severe("Cannot initialize metric group id " + id);
 						}
+					} else {
+						plugin.getLogger().warning("Unknown metric group: " + id);
 					}
 				}
 		);
+
 		/* For enabled components call configure() */
 		metricGroups.values().forEach(m -> m.configure(retrieveConfigSection(m)));
 		updaters.values().forEach(u -> u.configure(retrieveConfigSection(u)));
@@ -183,5 +189,22 @@ public class UpdaterManager implements Runnable {
 		        .filter(e -> !e.getValue()) /* Find ones that failed to update */
 		        .forEach(e -> plugin.getLogger().warning(e.getKey().name() + " has failed!"));
 		configurationLock.unlock();
+	}
+
+	public void start() {
+		if (updaterTaskId == null) {
+			updaterTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(this.plugin, this, 0, updateIntervalTicks);
+			if (updaterTaskId == -1) {
+				plugin.getLogger().severe("Cannot start metric update task!");
+				updaterTaskId = null;
+			}
+		}
+	}
+
+	public void stop() {
+		if (updaterTaskId != null) {
+			Bukkit.getScheduler().cancelTask(updaterTaskId);
+			updaterTaskId = null;
+		}
 	}
 }
