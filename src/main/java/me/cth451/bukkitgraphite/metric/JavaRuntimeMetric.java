@@ -10,8 +10,8 @@ import java.util.List;
 /**
  * Metrics reporting java runtime information. Memory usage is measured in bytes.
  */
-public class JavaRuntimeMetric implements MetricGroup {
-
+public class JavaRuntimeMetric extends MetricGroup {
+	public static String ID = "runtime";
 	public static String JVM_TOTAL_MEM = "runtime.mem.total";
 	public static String JVM_FREE_MEM = "runtime.mem.free";
 
@@ -35,12 +35,13 @@ public class JavaRuntimeMetric implements MetricGroup {
 
 	@Override
 	public String id() {
-		return "runtime";
+		return ID;
 	}
 
 	/**
 	 * This metric group does not have configurable elements.
-	 * @param section   metric group specific configuration section
+	 *
+	 * @param section metric group specific configuration section
 	 * @return true
 	 */
 	@Override

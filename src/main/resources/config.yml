@@ -1,4 +1,31 @@
-# Graphite metric hierarchy. Keys will be derived by appending to this key
-graphite-metric-root: minecraft
+# Which updaters to enable
+updaters:
+  - graphite
+disabled-updaters:
+  - console
 
-# Graphite Endpoint
+# Which metric groups to enable
+metric-groups:
+  - runtime
+  - player-active
+  - server-chunk-entity
+  - server-tps
+disabled-metric-groups:
+
+# Options section
+options:
+  updaters:
+    graphite:
+      # Graphite metric hierarchy. Keys will be derived by appending to this key
+      root-namespace: ""
+      # Graphite protocol server host domain name / IP address
+      host: ""
+      # Graphite protocol server host port
+      port: 0
+    console:
+      # Console doesn't have configurable elements
+  metric-groups:
+    runtime:
+    player-active:
+    server-chunk-entity:
+    server-tps:

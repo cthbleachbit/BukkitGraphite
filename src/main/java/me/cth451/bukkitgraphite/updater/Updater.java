@@ -2,6 +2,7 @@ package me.cth451.bukkitgraphite.updater;
 
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -9,19 +10,25 @@ import java.util.List;
 /**
  * Bare minimum APIs defining interface to a logging protocol for use with some remote metric service
  */
-public interface Updater {
+public abstract class Updater {
+	protected Plugin plugin;
+
+	protected Updater(Plugin plugin) {
+		this.plugin = plugin;
+	}
+
 	/**
 	 * Transmit a list of metrics to a remote logging service.
 	 *
 	 * @param entryList Collected metrics to send
 	 * @return whether update to remote logging service
 	 */
-	boolean sendUpdates(@NotNull List<MetricEntry> entryList);
+	abstract boolean sendUpdates(@NotNull List<MetricEntry> entryList);
 
 	/**
 	 * @return human-readable name for this updater service
 	 */
-	String name();
+	abstract String name();
 
 	/**
 	 * A unique identifier for this updater service. Server admins use this field to specify whether the updater should
@@ -29,7 +36,7 @@ public interface Updater {
 	 *
 	 * @return A unique identifier (can use alphanumeric, underscore and hyphen)
 	 */
-	String id();
+	abstract String id();
 
 	/**
 	 * Configure local parameters.
@@ -37,5 +44,5 @@ public interface Updater {
 	 * @param section   metric group specific configuration section
 	 * @return whether configuration was successful.
 	 */
-	boolean configure(ConfigurationSection section);
+	abstract boolean configure(ConfigurationSection section);
 }

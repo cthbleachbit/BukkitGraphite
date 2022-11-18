@@ -22,7 +22,7 @@ public record MetricEntry(String key, Map<String, String> tags, Double value, In
 	 */
 	public String toGraphite(String namespace) {
 		String namespacedKey = (namespace == null | namespace.isEmpty()) ? key() : namespace + "." + key();
-		String pathString = new MetricPath(namespacedKey,tags()).toGraphite();
+		String pathString = new MetricPath(namespacedKey, tags()).toGraphite();
 		return pathString + " " + value().toString() + " " + timestamp().getEpochSecond();
 	}
 }

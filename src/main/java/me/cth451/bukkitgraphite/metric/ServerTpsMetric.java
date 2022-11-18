@@ -12,7 +12,9 @@ import java.util.List;
 /**
  * Ticks-per-second and milliseconds-per-tick perf counters
  */
-public class ServerTpsMetric implements MetricGroup {
+public class ServerTpsMetric extends MetricGroup {
+
+	public static String ID = "server-tps";
 
 	@Override
 	public List<MetricEntry> scrape() {
@@ -36,12 +38,13 @@ public class ServerTpsMetric implements MetricGroup {
 
 	@Override
 	public String id() {
-		return "server_tps";
+		return ID;
 	}
 
 	/**
 	 * This metric group does not have configurable elements.
-	 * @param section   metric group specific configuration section
+	 *
+	 * @param section metric group specific configuration section
 	 * @return true
 	 */
 	@Override

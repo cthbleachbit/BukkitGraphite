@@ -4,6 +4,7 @@ import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import me.cth451.bukkitgraphite.metric.model.MetricPath;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -11,7 +12,9 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-public class GraphiteUpdater implements Updater {
+public class GraphiteUpdater extends Updater {
+	public static String ID = "graphite";
+
 	/**
 	 * Prepare a list of entries for upload
 	 *
@@ -43,7 +46,8 @@ public class GraphiteUpdater implements Updater {
 	private String rootNamespace;
 
 
-	public GraphiteUpdater() {
+	public GraphiteUpdater(Plugin plugin) {
+		super(plugin);
 		this.host = null;
 		this.port = 0;
 		rootNamespace = "";
@@ -94,7 +98,7 @@ public class GraphiteUpdater implements Updater {
 
 	@Override
 	public String id() {
-		return "graphite";
+		return ID;
 	}
 
 	/**
@@ -115,10 +119,18 @@ public class GraphiteUpdater implements Updater {
 		if (section == null) {
 			this.host = null;
 			this.port = 0;
-			Bukkit.getLogger().warning(this.name() + " No configuration specified - updater disabled");
+			plugin.getLogger().warning(this.name() + ": No configuration specified - updater disabled");
 			return false;
 		}
-		// TODO
+		this.setRootNamespace(section.getString("root-namespace"));
+		if (section.isString("host") && section.isInt("port")) {
+			this.setEndpoint(section.getString("host"), section.getInt("port"));
+			if (port <= 0 || port >= 65536) {
+				port = 0;
+				host = "";
+			}
+		}
+		plugin.getLogger().info("Using graphite backend " + host + ":" + port);
 		return true;
 	}
 }

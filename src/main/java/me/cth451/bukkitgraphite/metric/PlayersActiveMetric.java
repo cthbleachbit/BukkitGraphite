@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class PlayersActiveMetric implements MetricGroup {
+public class PlayersActiveMetric extends MetricGroup {
+	public static String ID = "player-active";
 
 	static MetricPath pathFromWorldAndGameMode(World w, GameMode gm) {
 		return new MetricPath("player.active", Map.ofEntries(
@@ -67,12 +68,13 @@ public class PlayersActiveMetric implements MetricGroup {
 
 	@Override
 	public String id() {
-		return "player_active";
+		return ID;
 	}
 
 	/**
 	 * This metric group does not have configurable elements.
-	 * @param section   metric group specific configuration section
+	 *
+	 * @param section metric group specific configuration section
 	 * @return true
 	 */
 	@Override

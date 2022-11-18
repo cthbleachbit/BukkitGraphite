@@ -11,7 +11,7 @@ import java.util.Objects;
  *     minecraft.server.entity;world=world_nether
  * </pre>
  *
- * @param key key for the metric without root namespace and leading dot separator
+ * @param key  key for the metric without root namespace and leading dot separator
  * @param tags tags for this key
  */
 public record MetricPath(String key, Map<String, String> tags) {

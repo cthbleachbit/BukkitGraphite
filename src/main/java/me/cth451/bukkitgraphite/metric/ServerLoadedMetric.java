@@ -13,8 +13,8 @@ import java.util.stream.Stream;
 /**
  * Load entity / chunks per world
  */
-public class ServerLoadedMetric implements MetricGroup {
-
+public class ServerLoadedMetric extends MetricGroup {
+	public static String ID = "server-chunk-entity";
 	public final static String ENTITY_LOADED = "server.entity";
 	public final static String CHUNK_LOADED = "server.chunk.loaded";
 	public final static String CHUNK_PINNED = "server.chunk.pinned";
@@ -56,12 +56,13 @@ public class ServerLoadedMetric implements MetricGroup {
 
 	@Override
 	public String id() {
-		return "server_chunk_entity";
+		return ID;
 	}
 
 	/**
 	 * This metric group does not have configurable elements.
-	 * @param section   metric group specific configuration section
+	 *
+	 * @param section metric group specific configuration section
 	 * @return true
 	 */
 	@Override

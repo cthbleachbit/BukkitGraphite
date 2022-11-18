@@ -4,39 +4,40 @@ import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
 
-public interface MetricGroup {
+public abstract class MetricGroup {
 	/**
 	 * Reap current sensors value into a list of entries.
 	 *
 	 * @return sensors reaped
 	 */
-	List<MetricEntry> scrape();
+	public abstract List<MetricEntry> scrape();
 
 	/**
 	 * Polling interval in ticks. This should be a constant value
 	 *
 	 * @return polling interval
 	 */
-	double interval();
+	public abstract double interval();
 
 	/**
 	 * @return Human-readable name for this metric
 	 */
-	String name();
+	public abstract String name();
 
 	/**
-	 * A unique identifier for this metric group.
-	 * Server admins use this field to specify whether the group should be enabled.
+	 * A unique identifier for this metric group. Server admins use this field to specify whether the group should be
+	 * enabled.
 	 *
 	 * @return A unique identifier (can use alphanumeric, underscore and hyphen)
 	 */
-	String id();
+	public abstract String id();
 
 	/**
-	 * Configure local parameters.
-	 * Metric group configurations should reside in options.metric-group.[id] and is presented via section
-	 * @param section   metric group specific configuration section
+	 * Configure local parameters. Metric group configurations should reside in options.metric-group.[id] and is
+	 * presented via section
+	 *
+	 * @param section metric group specific configuration section
 	 * @return whether configuration was successful.
 	 */
-	boolean configure(ConfigurationSection section);
+	public abstract boolean configure(ConfigurationSection section);
 }
