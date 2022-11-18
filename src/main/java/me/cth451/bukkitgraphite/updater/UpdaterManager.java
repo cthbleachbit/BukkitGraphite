@@ -8,6 +8,7 @@ import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import me.cth451.bukkitgraphite.metric.model.MetricGroup;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -130,8 +131,10 @@ public class UpdaterManager implements Runnable {
 	 * Register updaters and metrics enabled in the server config and apply options.
 	 * <p>
 	 * This function assumes configuration has been reloaded from disk before here.
+	 *
+	 * @param p player who initiated reloading - null if invoked from program or command or entity
 	 */
-	public void reloadComponentsFromConfig() {
+	public void reloadComponentsFromConfig(@Nullable Player p) {
 		List<String> updatersToEnable = retrieveEnabledUpdaters();
 		List<String> metricGroupsToEnable = retrieveEnabledMetricGroups();
 
@@ -146,10 +149,20 @@ public class UpdaterManager implements Runnable {
 							registerUpdaterWithLock(u.getConstructor(Plugin.class).newInstance(this.plugin));
 						} catch (InstantiationException | IllegalAccessException | InvocationTargetException |
 						         NoSuchMethodException e) {
-							plugin.getLogger().severe("Cannot initialize updater id " + id);
+							String message = "Cannot initialize updater id " + id;
+							if (p == null) {
+								plugin.getLogger().severe(message);
+							} else {
+								p.sendMessage(message);
+							}
 						}
 					} else {
-						plugin.getLogger().warning("Unknown updater: " + id);
+						String message = "Unknown updater: " + id;
+						if (p == null) {
+							plugin.getLogger().severe(message);
+						} else {
+							p.sendMessage(message);
+						}
 					}
 				}
 		);
@@ -161,10 +174,20 @@ public class UpdaterManager implements Runnable {
 							registerMetricWithLock(m.getConstructor().newInstance());
 						} catch (InstantiationException | IllegalAccessException | InvocationTargetException |
 						         NoSuchMethodException e) {
-							plugin.getLogger().severe("Cannot initialize metric group id " + id);
+							String message = "Cannot initialize metric group id " + id;
+							if (p == null) {
+								plugin.getLogger().severe(message);
+							} else {
+								p.sendMessage(message);
+							}
 						}
 					} else {
-						plugin.getLogger().warning("Unknown metric group: " + id);
+						String message = "Unknown metric group: " + id;
+						if (p == null) {
+							plugin.getLogger().severe(message);
+						} else {
+							p.sendMessage(message);
+						}
 					}
 				}
 		);
@@ -173,6 +196,20 @@ public class UpdaterManager implements Runnable {
 		metricGroups.values().forEach(m -> m.configure(retrieveConfigSection(m)));
 		updaters.values().forEach(u -> u.configure(retrieveConfigSection(u)));
 		configurationLock.unlock();
+
+		/* Load global updater preference in `options.global` */
+		{
+			if (!plugin.getConfig().isInt("options.global.scrape-interval-ticks")) {
+				plugin.getConfig().set("options.global.scrape-interval-ticks", 20);
+			}
+			this.updateIntervalTicks = plugin.getConfig().getInt("options.global.scrape-interval-ticks");
+			String message = "Update Interval: every " + this.updateIntervalTicks + " ticks";
+			if (p == null) {
+				plugin.getLogger().info(message);
+			} else {
+				p.sendMessage(message);
+			}
+		}
 	}
 
 	@Override
@@ -192,6 +229,7 @@ public class UpdaterManager implements Runnable {
 	}
 
 	public void start() {
+		configurationLock.lock();
 		if (updaterTaskId == null) {
 			updaterTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(this.plugin, this, 0, updateIntervalTicks);
 			if (updaterTaskId == -1) {
@@ -199,12 +237,15 @@ public class UpdaterManager implements Runnable {
 				updaterTaskId = null;
 			}
 		}
+		configurationLock.unlock();
 	}
 
 	public void stop() {
+		configurationLock.lock();
 		if (updaterTaskId != null) {
 			Bukkit.getScheduler().cancelTask(updaterTaskId);
 			updaterTaskId = null;
 		}
+		configurationLock.unlock();
 	}
 }

@@ -14,6 +14,8 @@ disabled-metric-groups:
 
 # Options section
 options:
+  global:
+    scrape-interval-ticks: 20
   updaters:
     graphite:
       # Graphite metric hierarchy. Keys will be derived by appending to this key
