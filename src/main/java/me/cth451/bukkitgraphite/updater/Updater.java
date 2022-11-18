@@ -45,4 +45,14 @@ public abstract class Updater {
 	 * @return whether configuration was successful.
 	 */
 	abstract boolean configure(ConfigurationSection section);
+
+	/**
+	 * Initialize internal states and start any necessary background tasks.
+	 */
+	abstract void start();
+
+	/**
+	 * Stop activity and release states (if any)
+	 */
+	abstract void halt();
 }

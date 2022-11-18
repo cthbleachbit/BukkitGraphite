@@ -87,6 +87,7 @@ public class UpdaterManager implements Runnable {
 	 */
 	public void unregisterAll() {
 		configurationLock.lock();
+		this.updaters.values().forEach(Updater::halt);
 		this.updaters.clear();
 		this.metricGroups.clear();
 		configurationLock.unlock();
@@ -226,6 +227,7 @@ public class UpdaterManager implements Runnable {
 		/* For enabled components call configure() */
 		metricGroups.values().forEach(m -> m.configure(retrieveConfigSection(m)));
 		updaters.values().forEach(u -> u.configure(retrieveConfigSection(u)));
+		updaters.values().forEach(Updater::start);
 		configurationLock.unlock();
 
 		/* Load global updater preference in `options.global` */

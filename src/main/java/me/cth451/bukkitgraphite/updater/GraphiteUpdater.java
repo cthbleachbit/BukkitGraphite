@@ -11,6 +11,9 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+/**
+ * Graphite plaintext TCP push protocol
+ */
 public class GraphiteUpdater extends Updater {
 	public static String ID = "graphite";
 
@@ -70,7 +73,8 @@ public class GraphiteUpdater extends Updater {
 
 	/**
 	 * Set root namespace that metric data points should be placed under
-	 * @param namespace   namespace - set null or empty to not use any enclosing namespace
+	 *
+	 * @param namespace namespace - set null or empty to not use any enclosing namespace
 	 */
 	public void setRootNamespace(@Nullable String namespace) {
 		this.rootNamespace = namespace;
@@ -138,5 +142,19 @@ public class GraphiteUpdater extends Updater {
 		}
 		plugin.getLogger().info("Using graphite backend " + host + ":" + port + " with namespace " + rootNamespace);
 		return true;
+	}
+
+	/**
+	 * Graphite updater is stateless
+	 */
+	@Override
+	void start() {
+	}
+
+	/**
+	 * Graphite updater is stateless
+	 */
+	@Override
+	void halt() {
 	}
 }

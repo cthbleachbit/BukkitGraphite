@@ -43,4 +43,18 @@ public class ConsoleUpdater extends Updater {
 	public boolean configure(ConfigurationSection section) {
 		return true;
 	}
+
+	/**
+	 * Console updater is stateless
+	 */
+	@Override
+	void start() {
+	}
+
+	/**
+	 * Console updater is stateless
+	 */
+	@Override
+	void halt() {
+	}
 }
