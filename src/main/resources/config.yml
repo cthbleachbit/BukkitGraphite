@@ -12,8 +12,10 @@ metric-groups:
 
 # Options section
 options:
+  # Global updater options
   global:
     scrape-interval-ticks: 20
+  # Knobs specific to updater backend
   updaters:
     graphite:
       # Graphite metric hierarchy. Keys will be derived by appending to this key
@@ -22,8 +24,9 @@ options:
       host: ""
       # Graphite protocol server host port
       port: 0
+    # Console doesn't have configurable elements (for now)
     console:
-      # Console doesn't have configurable elements
+  # Metric groups don't have configurable elements (for now)
   metric-groups:
     runtime:
     player-active:
