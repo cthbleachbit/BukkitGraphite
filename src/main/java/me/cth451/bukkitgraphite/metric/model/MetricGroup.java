@@ -8,17 +8,25 @@ public interface MetricGroup {
 	 *
 	 * @return sensors reaped
 	 */
-	public List<MetricEntry> scrape();
+	List<MetricEntry> scrape();
 
 	/**
 	 * Polling interval in ticks. This should be a constant value
 	 *
 	 * @return polling interval
 	 */
-	public double interval();
+	double interval();
 
 	/**
 	 * @return Human-readable name for this metric
 	 */
-	public String name();
+	String name();
+
+	/**
+	 * A unique identifier for this metric group.
+	 * Server admins use this field to specify whether the group should be enabled.
+	 *
+	 * @return A unique identifier (can use alphanumeric and underscore)
+	 */
+	String id();
 }

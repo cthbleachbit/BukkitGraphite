@@ -32,4 +32,9 @@ public class ServerTpsMetric implements MetricGroup {
 	public String name() {
 		return "Server ticks-per-second";
 	}
+
+	@Override
+	public String id() {
+		return "server_tps";
+	}
 }

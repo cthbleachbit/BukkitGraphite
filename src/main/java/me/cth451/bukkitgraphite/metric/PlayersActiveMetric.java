@@ -63,4 +63,9 @@ public class PlayersActiveMetric implements MetricGroup {
 	public String name() {
 		return "Number of players active";
 	}
+
+	@Override
+	public String id() {
+		return "player_active";
+	}
 }

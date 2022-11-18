@@ -2,20 +2,18 @@ package me.cth451.bukkitgraphite.metric;
 
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import me.cth451.bukkitgraphite.metric.model.MetricGroup;
-import me.cth451.bukkitgraphite.metric.model.MetricPath;
 import org.bukkit.Bukkit;
-import org.bukkit.World;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * Load entity / chunks per world
  */
 public class ServerLoadedMetric implements MetricGroup {
+
 	public final static String ENTITY_LOADED = "server.entity";
 	public final static String CHUNK_LOADED = "server.chunk.loaded";
 	public final static String CHUNK_PINNED = "server.chunk.pinned";
@@ -53,5 +51,10 @@ public class ServerLoadedMetric implements MetricGroup {
 	@Override
 	public String name() {
 		return "Loaded entity / chunks";
+	}
+
+	@Override
+	public String id() {
+		return "server_chunk_entity";
 	}
 }

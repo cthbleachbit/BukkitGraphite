@@ -17,9 +17,11 @@ public record MetricEntry(String key, Map<String, String> tags, Double value, In
 
 	/**
 	 * Adapting metric to graphite payload
+	 *
 	 * @return plain text metric in graphite plain text format
 	 */
 	public String toGraphite() {
-		return new MetricPath(key(), tags()).toGraphite() + " " + value().toString() + " " + timestamp().getEpochSecond();
+		return new MetricPath(key(),
+		                      tags()).toGraphite() + " " + value().toString() + " " + timestamp().getEpochSecond();
 	}
 }
