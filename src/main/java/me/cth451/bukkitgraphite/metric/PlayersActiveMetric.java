@@ -8,6 +8,7 @@ import org.bukkit.GameMode;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class PlayersActiveMetric extends MetricGroup {
 	}
 
 	@Override
-	public List<MetricEntry> scrape() {
+	public @NotNull List<MetricEntry> scrape() {
 		/* Account for online players */
 		Map<MetricPath, Double> playerCount =
 				Bukkit.getOnlinePlayers()
@@ -65,12 +66,12 @@ public class PlayersActiveMetric extends MetricGroup {
 	}
 
 	@Override
-	public String name() {
+	public @NotNull String name() {
 		return "Number of players active";
 	}
 
 	@Override
-	public String id() {
+	public @NotNull String id() {
 		return ID;
 	}
 

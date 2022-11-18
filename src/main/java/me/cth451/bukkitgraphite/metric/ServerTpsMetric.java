@@ -5,6 +5,7 @@ import me.cth451.bukkitgraphite.metric.model.MetricGroup;
 import me.cth451.bukkitgraphite.metric.model.MetricPath;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -17,7 +18,7 @@ public class ServerTpsMetric extends MetricGroup {
 	public static String ID = "server-tps";
 
 	@Override
-	public List<MetricEntry> scrape() {
+	public @NotNull List<MetricEntry> scrape() {
 		List<MetricEntry> results = new LinkedList<>();
 		/* tick per second */
 		results.add(new MetricEntry(new MetricPath("server.tps", null), Bukkit.getTPS()[0]));
@@ -32,12 +33,12 @@ public class ServerTpsMetric extends MetricGroup {
 	}
 
 	@Override
-	public String name() {
+	public @NotNull String name() {
 		return "Server ticks-per-second";
 	}
 
 	@Override
-	public String id() {
+	public @NotNull String id() {
 		return ID;
 	}
 

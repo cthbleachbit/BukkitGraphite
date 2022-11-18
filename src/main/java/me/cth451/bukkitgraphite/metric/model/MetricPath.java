@@ -1,5 +1,7 @@
 package me.cth451.bukkitgraphite.metric.model;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Map;
 import java.util.List;
 import java.util.Objects;
@@ -19,7 +21,7 @@ public record MetricPath(String key, Map<String, String> tags) {
 		Objects.requireNonNull(key);
 	}
 
-	public String toGraphite() {
+	public @NotNull String toGraphite() {
 		if (tags == null || tags.isEmpty()) {
 			return key;
 		}

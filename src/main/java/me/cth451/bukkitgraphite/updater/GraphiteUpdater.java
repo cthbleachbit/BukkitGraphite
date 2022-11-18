@@ -94,7 +94,7 @@ public class GraphiteUpdater extends Updater {
 	}
 
 	@Override
-	public String name() {
+	public @NotNull String name() {
 		if (host == null || host.isEmpty() || port == 0) {
 			return "Graphite Updater (no backend)";
 		}
@@ -102,7 +102,7 @@ public class GraphiteUpdater extends Updater {
 	}
 
 	@Override
-	public String id() {
+	public @NotNull String id() {
 		return ID;
 	}
 

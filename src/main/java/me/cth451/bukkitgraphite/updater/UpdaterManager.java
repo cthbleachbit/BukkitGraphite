@@ -50,7 +50,7 @@ public class UpdaterManager implements Runnable {
 		this.plugin = plugin;
 	}
 
-	private void registerUpdaterWithLock(Updater updater) {
+	private void registerUpdaterWithLock(@NotNull Updater updater) {
 		plugin.getLogger().info("Registered updater: " + updater.name());
 		this.updaters.put(updater.id(), updater);
 	}
@@ -60,13 +60,13 @@ public class UpdaterManager implements Runnable {
 	 *
 	 * @param updater updater instance to register
 	 */
-	public void registerUpdater(Updater updater) {
+	public void registerUpdater(@NotNull Updater updater) {
 		configurationLock.lock();
 		registerUpdaterWithLock(updater);
 		configurationLock.unlock();
 	}
 
-	private void registerMetricWithLock(MetricGroup metric) {
+	private void registerMetricWithLock(@NotNull MetricGroup metric) {
 		plugin.getLogger().info("Registered metric: " + metric.name());
 		this.metricGroups.put(metric.id(), metric);
 	}
@@ -76,7 +76,7 @@ public class UpdaterManager implements Runnable {
 	 *
 	 * @param metric metric group instance to register
 	 */
-	public void registerMetric(MetricGroup metric) {
+	public void registerMetric(@NotNull MetricGroup metric) {
 		configurationLock.lock();
 		registerMetricWithLock(metric);
 		configurationLock.unlock();
@@ -243,6 +243,9 @@ public class UpdaterManager implements Runnable {
 		}
 	}
 
+	/**
+	 * Repeating routine that generate one round of update.
+	 */
 	@Override
 	public void run() {
 		configurationLock.lock();

@@ -3,6 +3,7 @@ package me.cth451.bukkitgraphite.metric;
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import me.cth451.bukkitgraphite.metric.model.MetricGroup;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +17,7 @@ public class JavaRuntimeMetric extends MetricGroup {
 	public static String JVM_FREE_MEM = "runtime.mem.free";
 
 	@Override
-	public List<MetricEntry> scrape() {
+	public @NotNull List<MetricEntry> scrape() {
 		List<MetricEntry> results = new LinkedList<>();
 		results.add(new MetricEntry(JVM_TOTAL_MEM, null, (double) Runtime.getRuntime().totalMemory()));
 		results.add(new MetricEntry(JVM_FREE_MEM, null, (double) Runtime.getRuntime().freeMemory()));
@@ -29,12 +30,12 @@ public class JavaRuntimeMetric extends MetricGroup {
 	}
 
 	@Override
-	public String name() {
+	public @NotNull String name() {
 		return "Java Runtime Information";
 	}
 
 	@Override
-	public String id() {
+	public @NotNull String id() {
 		return ID;
 	}
 

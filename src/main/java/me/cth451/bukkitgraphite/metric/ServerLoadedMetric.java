@@ -4,6 +4,7 @@ import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import me.cth451.bukkitgraphite.metric.model.MetricGroup;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class ServerLoadedMetric extends MetricGroup {
 	}
 
 	@Override
-	public List<MetricEntry> scrape() {
+	public @NotNull List<MetricEntry> scrape() {
 		List<MetricEntry> results = new LinkedList<>();
 		Stream<MetricEntry> entityCount =
 				Bukkit.getWorlds()
@@ -50,12 +51,12 @@ public class ServerLoadedMetric extends MetricGroup {
 	}
 
 	@Override
-	public String name() {
+	public @NotNull String name() {
 		return "Loaded entity / chunks";
 	}
 
 	@Override
-	public String id() {
+	public @NotNull String id() {
 		return ID;
 	}
 

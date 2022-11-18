@@ -24,12 +24,12 @@ public class ConsoleUpdater extends Updater {
 	}
 
 	@Override
-	public String name() {
+	public @NotNull String name() {
 		return "Server Console";
 	}
 
 	@Override
-	public String id() {
+	public @NotNull String id() {
 		return ID;
 	}
 

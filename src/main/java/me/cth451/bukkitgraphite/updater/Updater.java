@@ -28,7 +28,7 @@ public abstract class Updater {
 	/**
 	 * @return human-readable name for this updater service
 	 */
-	abstract String name();
+	abstract @NotNull String name();
 
 	/**
 	 * A unique identifier for this updater service. Server admins use this field to specify whether the updater should
@@ -36,7 +36,7 @@ public abstract class Updater {
 	 *
 	 * @return A unique identifier (can use alphanumeric, underscore and hyphen)
 	 */
-	abstract String id();
+	abstract @NotNull String id();
 
 	/**
 	 * Configure local parameters.
