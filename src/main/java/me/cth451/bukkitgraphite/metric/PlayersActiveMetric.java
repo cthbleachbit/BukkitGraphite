@@ -9,7 +9,6 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -17,28 +16,26 @@ import java.util.stream.Collectors;
 public class PlayersActiveMetric extends MetricGroup {
 	public static String ID = "player-active";
 
-	static MetricPath pathFromWorldAndGameMode(World w, GameMode gm) {
-		return new MetricPath("player.active", Map.ofEntries(
+	static MetricPath pathFromWorldAndGameMode(String key, World w, GameMode gm) {
+		return new MetricPath(key, Map.ofEntries(
 				Map.entry("world", w.getName()),
 				Map.entry("gamemode", gm.name())
 		));
 	}
 
-	static MetricPath pathFromActivePlayer(Player p) {
-		return pathFromWorldAndGameMode(p.getWorld(), p.getGameMode());
+	static MetricPath pathFromActivePlayer(String key, Player p) {
+		return pathFromWorldAndGameMode(key, p.getWorld(), p.getGameMode());
 	}
 
 	@Override
 	public List<MetricEntry> scrape() {
-		HashMap<MetricPath, List<Player>> stats = new HashMap<>();
-
 		/* Account for online players */
 		Map<MetricPath, Double> playerCount =
 				Bukkit.getOnlinePlayers()
 				      .stream()
 				      .collect(
 						      Collectors.groupingBy(
-								      PlayersActiveMetric::pathFromActivePlayer,
+								      p -> pathFromActivePlayer("player.active", p),
 								      Collectors.reducing(0.0d, p -> 1.0d, Double::sum)
 						      )
 				      );
@@ -46,14 +43,20 @@ public class PlayersActiveMetric extends MetricGroup {
 		/* Account for empty entries */
 		for (World w : Bukkit.getWorlds()) {
 			for (GameMode gm : GameMode.values()) {
-				MetricPath key = pathFromWorldAndGameMode(w, gm);
+				MetricPath key = pathFromWorldAndGameMode("player.active", w, gm);
 				if (!playerCount.containsKey(key)) {
 					playerCount.put(key, 0d);
 				}
 			}
 		}
 
-		return playerCount.entrySet().stream().map(e -> new MetricEntry(e.getKey(), e.getValue())).toList();
+		/* Count number of server operators online */
+		long ops = Bukkit.getOnlinePlayers().stream().filter(Player::isOp).count();
+		playerCount.put(new MetricPath("player.op", null), (double) ops);
+
+		return playerCount.entrySet().stream()
+		                  .map(e -> new MetricEntry(e.getKey(), e.getValue()))
+		                  .toList();
 	}
 
 	@Override
