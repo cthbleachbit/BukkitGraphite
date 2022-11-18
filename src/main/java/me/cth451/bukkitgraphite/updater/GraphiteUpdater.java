@@ -1,11 +1,10 @@
 package me.cth451.bukkitgraphite.updater;
 
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
-import me.cth451.bukkitgraphite.metric.model.MetricPath;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.net.Socket;
@@ -45,12 +44,11 @@ public class GraphiteUpdater extends Updater {
 	 */
 	private String rootNamespace;
 
-
 	public GraphiteUpdater(Plugin plugin) {
 		super(plugin);
 		this.host = null;
 		this.port = 0;
-		rootNamespace = "";
+		this.rootNamespace = "";
 	}
 
 	/**
@@ -70,7 +68,11 @@ public class GraphiteUpdater extends Updater {
 		}
 	}
 
-	public void setRootNamespace(String namespace) {
+	/**
+	 * Set root namespace that metric data points should be placed under
+	 * @param namespace   namespace - set null or empty to not use any enclosing namespace
+	 */
+	public void setRootNamespace(@Nullable String namespace) {
 		this.rootNamespace = namespace;
 	}
 
@@ -93,6 +95,9 @@ public class GraphiteUpdater extends Updater {
 
 	@Override
 	public String name() {
+		if (host == null || host.isEmpty() || port == 0) {
+			return "Graphite Updater (no backend)";
+		}
 		return "Graphite Updater at " + host + ":" + port;
 	}
 
@@ -119,18 +124,19 @@ public class GraphiteUpdater extends Updater {
 		if (section == null) {
 			this.host = null;
 			this.port = 0;
-			plugin.getLogger().warning(this.name() + ": No configuration specified - updater disabled");
+			plugin.getLogger().warning(this.name() + ": No configuration found - check your config!");
 			return false;
 		}
 		this.setRootNamespace(section.getString("root-namespace"));
 		if (section.isString("host") && section.isInt("port")) {
 			this.setEndpoint(section.getString("host"), section.getInt("port"));
 			if (port <= 0 || port >= 65536) {
-				port = 0;
-				host = "";
+				plugin.getLogger().warning(this.name() + ": Invalid port specified - check your config!");
+				this.setEndpoint(null, 0);
+				return false;
 			}
 		}
-		plugin.getLogger().info("Using graphite backend " + host + ":" + port);
+		plugin.getLogger().info("Using graphite backend " + host + ":" + port + " with namespace " + rootNamespace);
 		return true;
 	}
 }

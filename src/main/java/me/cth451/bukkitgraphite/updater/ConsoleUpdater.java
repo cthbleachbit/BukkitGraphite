@@ -1,7 +1,6 @@
 package me.cth451.bukkitgraphite.updater;
 
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
