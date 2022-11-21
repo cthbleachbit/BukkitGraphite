@@ -1,8 +1,8 @@
 package me.cth451.bukkitgraphite.updater;
 
+import me.cth451.bukkitgraphite.PluginMain;
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,9 +35,9 @@ public class PrometheusNodeExporter extends Updater {
 	/**
 	 * Internal state - send update will send stats here, and collected in one shot during remote pull
 	 */
-	private ConcurrentLinkedQueue<MetricEntry> stagingMetric;
+	private final ConcurrentLinkedQueue<MetricEntry> stagingMetric;
 
-	protected PrometheusNodeExporter(Plugin plugin) {
+	protected PrometheusNodeExporter(PluginMain plugin) {
 		super(plugin);
 		this.stagingMetric = new ConcurrentLinkedQueue<>();
 	}
@@ -70,16 +70,17 @@ public class PrometheusNodeExporter extends Updater {
 
 	/**
 	 * Deposit stats into queue
+	 *
 	 * @param entryList Collected metrics to send
 	 * @return whether enqueue is successful.
 	 */
 	@Override
-	boolean sendUpdates(@NotNull List<MetricEntry> entryList) {
+	public boolean sendUpdates(@NotNull List<MetricEntry> entryList) {
 		return this.stagingMetric.addAll(entryList);
 	}
 
 	@Override
-	@NotNull String name() {
+	public @NotNull String name() {
 		if (listenAddr == null || listenPort == 0) {
 			return "Prometheus exporter (inactive - no backend)";
 		}
@@ -87,17 +88,18 @@ public class PrometheusNodeExporter extends Updater {
 	}
 
 	@Override
-	@NotNull String id() {
+	public @NotNull String id() {
 		return ID;
 	}
 
 	/**
 	 * Reconfigure internal options
-	 * @param section   metric group specific configuration section
+	 *
+	 * @param section metric group specific configuration section
 	 * @return true iff all required keys are found and applied
 	 */
 	@Override
-	boolean configure(ConfigurationSection section) {
+	public boolean configure(ConfigurationSection section) {
 		if (section == null) {
 			this.listenAddr = null;
 			this.listenPort = 0;
@@ -117,7 +119,7 @@ public class PrometheusNodeExporter extends Updater {
 	 * TODO
 	 */
 	@Override
-	void start() {
+	public void start() {
 
 	}
 
@@ -126,7 +128,7 @@ public class PrometheusNodeExporter extends Updater {
 	 * TODO
 	 */
 	@Override
-	void halt() {
+	public void halt() {
 
 	}
 }

@@ -1,8 +1,9 @@
 package me.cth451.bukkitgraphite.updater;
 
+import me.cth451.bukkitgraphite.PluggableModule;
+import me.cth451.bukkitgraphite.PluginMain;
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -10,11 +11,9 @@ import java.util.List;
 /**
  * Bare minimum APIs defining interface to a logging protocol for use with some remote metric service
  */
-public abstract class Updater {
-	protected final Plugin plugin;
-
-	protected Updater(Plugin plugin) {
-		this.plugin = plugin;
+public abstract class Updater extends PluggableModule {
+	protected Updater(PluginMain plugin) {
+		super(plugin);
 	}
 
 	/**
@@ -23,36 +22,34 @@ public abstract class Updater {
 	 * @param entryList Collected metrics to send
 	 * @return whether update to remote logging service
 	 */
-	abstract boolean sendUpdates(@NotNull List<MetricEntry> entryList);
+	public abstract boolean sendUpdates(@NotNull List<MetricEntry> entryList);
+
+	@Override
+	public abstract @NotNull String name();
+
+	@Override
+	public abstract @NotNull String id();
+
+	@Override
+	public String component() {
+		return "updater";
+	}
 
 	/**
-	 * @return human-readable name for this updater service
-	 */
-	abstract @NotNull String name();
-
-	/**
-	 * A unique identifier for this updater service. Server admins use this field to specify whether the updater should
-	 * be enabled and configure its behavior in plugin configuration file.
+	 * Configure local parameters. Updater configurations should reside in options.updater.[id] and is presented via
+	 * section. Updaters that require configuration should override this method.
 	 *
-	 * @return A unique identifier (can use alphanumeric, underscore and hyphen)
-	 */
-	abstract @NotNull String id();
-
-	/**
-	 * Configure local parameters.
-	 * Metric group configurations should reside in options.updater.[id] and is presented via section
-	 * @param section   metric group specific configuration section
+	 * @param section updater specific configuration section
 	 * @return whether configuration was successful.
 	 */
-	abstract boolean configure(ConfigurationSection section);
+	@Override
+	public boolean configure(ConfigurationSection section) {
+		return true;
+	}
 
-	/**
-	 * Initialize internal states and start any necessary background tasks.
-	 */
-	abstract void start();
+	@Override
+	public void start() {}
 
-	/**
-	 * Stop activity and release states (if any)
-	 */
-	abstract void halt();
+	@Override
+	public void halt() {}
 }

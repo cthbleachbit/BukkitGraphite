@@ -37,7 +37,7 @@ public record MetricEntry(String key, Map<String, String> tags, double value, In
 	 * @return plain text metric in graphite plain text format
 	 */
 	public String toGraphite(String namespace) {
-		String namespacedKey = (namespace == null | namespace.isEmpty()) ? key() : namespace + "." + key();
+		String namespacedKey = (namespace == null || namespace.isEmpty()) ? key() : namespace + "." + key();
 		String pathString = new MetricPath(namespacedKey, tags()).toGraphite();
 		return pathString + " " + value() + " " + timestamp().getEpochSecond();
 	}

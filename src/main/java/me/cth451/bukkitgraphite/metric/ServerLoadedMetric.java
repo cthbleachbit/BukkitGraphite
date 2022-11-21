@@ -1,5 +1,6 @@
 package me.cth451.bukkitgraphite.metric;
 
+import me.cth451.bukkitgraphite.PluginMain;
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import me.cth451.bukkitgraphite.metric.model.MetricGroup;
 import org.bukkit.Bukkit;
@@ -19,6 +20,10 @@ public class ServerLoadedMetric extends MetricGroup {
 	public final static String ENTITY_LOADED = "server.entity";
 	public final static String CHUNK_LOADED = "server.chunk.loaded";
 	public final static String CHUNK_PINNED = "server.chunk.pinned";
+
+	public ServerLoadedMetric(PluginMain plugin) {
+		super(plugin);
+	}
 
 	private static MetricEntry assemble(String key, String worldName, int value) {
 		return new MetricEntry(key, Map.of("world", worldName), (double) value);

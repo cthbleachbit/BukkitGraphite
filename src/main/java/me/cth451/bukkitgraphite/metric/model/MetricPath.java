@@ -2,8 +2,8 @@ package me.cth451.bukkitgraphite.metric.model;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**

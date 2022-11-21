@@ -1,8 +1,8 @@
 package me.cth451.bukkitgraphite.updater;
 
+import me.cth451.bukkitgraphite.PluginMain;
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import java.util.List;
 public class ConsoleUpdater extends Updater {
 	public static String ID = "console";
 
-	public ConsoleUpdater(Plugin plugin) {
+	public ConsoleUpdater(PluginMain plugin) {
 		super(plugin);
 	}
 
@@ -42,19 +42,5 @@ public class ConsoleUpdater extends Updater {
 	@Override
 	public boolean configure(ConfigurationSection section) {
 		return true;
-	}
-
-	/**
-	 * Console updater is stateless
-	 */
-	@Override
-	void start() {
-	}
-
-	/**
-	 * Console updater is stateless
-	 */
-	@Override
-	void halt() {
 	}
 }

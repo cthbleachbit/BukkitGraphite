@@ -1,8 +1,8 @@
 package me.cth451.bukkitgraphite.updater;
 
+import me.cth451.bukkitgraphite.PluginMain;
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,7 +47,7 @@ public class GraphiteUpdater extends Updater {
 	 */
 	private String rootNamespace;
 
-	public GraphiteUpdater(Plugin plugin) {
+	public GraphiteUpdater(PluginMain plugin) {
 		super(plugin);
 		this.host = null;
 		this.port = 0;
@@ -142,19 +142,5 @@ public class GraphiteUpdater extends Updater {
 		}
 		plugin.getLogger().info("Using graphite backend " + host + ":" + port + " with namespace " + rootNamespace);
 		return true;
-	}
-
-	/**
-	 * Graphite updater is stateless
-	 */
-	@Override
-	void start() {
-	}
-
-	/**
-	 * Graphite updater is stateless
-	 */
-	@Override
-	void halt() {
 	}
 }

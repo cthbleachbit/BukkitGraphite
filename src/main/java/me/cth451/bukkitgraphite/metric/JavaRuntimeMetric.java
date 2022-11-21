@@ -1,5 +1,6 @@
 package me.cth451.bukkitgraphite.metric;
 
+import me.cth451.bukkitgraphite.PluginMain;
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import me.cth451.bukkitgraphite.metric.model.MetricGroup;
 import org.bukkit.configuration.ConfigurationSection;
@@ -15,6 +16,10 @@ public class JavaRuntimeMetric extends MetricGroup {
 	public static String ID = "runtime";
 	public static String JVM_TOTAL_MEM = "runtime.mem.total";
 	public static String JVM_FREE_MEM = "runtime.mem.free";
+
+	public JavaRuntimeMetric(PluginMain plugin) {
+		super(plugin);
+	}
 
 	@Override
 	public @NotNull List<MetricEntry> scrape() {

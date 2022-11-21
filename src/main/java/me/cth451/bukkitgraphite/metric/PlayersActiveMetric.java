@@ -1,5 +1,6 @@
 package me.cth451.bukkitgraphite.metric;
 
+import me.cth451.bukkitgraphite.PluginMain;
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import me.cth451.bukkitgraphite.metric.model.MetricGroup;
 import me.cth451.bukkitgraphite.metric.model.MetricPath;
@@ -17,14 +18,18 @@ import java.util.stream.Collectors;
 public class PlayersActiveMetric extends MetricGroup {
 	public static String ID = "player-active";
 
-	static MetricPath pathFromWorldAndGameMode(String key, World w, GameMode gm) {
+	public PlayersActiveMetric(PluginMain plugin) {
+		super(plugin);
+	}
+
+	private static MetricPath pathFromWorldAndGameMode(String key, World w, GameMode gm) {
 		return new MetricPath(key, Map.ofEntries(
 				Map.entry("world", w.getName()),
 				Map.entry("gamemode", gm.name())
 		));
 	}
 
-	static MetricPath pathFromActivePlayer(String key, Player p) {
+	private static MetricPath pathFromActivePlayer(String key, Player p) {
 		return pathFromWorldAndGameMode(key, p.getWorld(), p.getGameMode());
 	}
 

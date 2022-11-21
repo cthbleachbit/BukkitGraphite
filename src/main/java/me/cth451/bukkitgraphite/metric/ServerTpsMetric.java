@@ -1,5 +1,6 @@
 package me.cth451.bukkitgraphite.metric;
 
+import me.cth451.bukkitgraphite.PluginMain;
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import me.cth451.bukkitgraphite.metric.model.MetricGroup;
 import me.cth451.bukkitgraphite.metric.model.MetricPath;
@@ -16,6 +17,10 @@ import java.util.List;
 public class ServerTpsMetric extends MetricGroup {
 
 	public static String ID = "server-tps";
+
+	public ServerTpsMetric(PluginMain plugin) {
+		super(plugin);
+	}
 
 	@Override
 	public @NotNull List<MetricEntry> scrape() {
