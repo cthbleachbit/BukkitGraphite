@@ -27,4 +27,4 @@ buildNumber.properties
 *.iml
 
 # testserver
-testserver
+testserver*
