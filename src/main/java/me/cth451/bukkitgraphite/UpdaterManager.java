@@ -15,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -119,42 +118,65 @@ public class UpdaterManager implements Runnable {
 		}
 
 		configurationLock.lock();
-		modulesToEnable.parallelStream().forEach(
-				id -> {
+
+		stopBackgroundTaskWithLock();
+
+		long mInitFail = modulesToEnable
+				.parallelStream()
+				.filter(id -> { /* keep ones that failed to initialize */
 					Class<? extends PluggableModule> cm = null;
 					if (knownUpdaters.containsKey(id)) {
 						cm = knownUpdaters.get(id);
 					} else if (knownMetricGroups.containsKey(id)) {
 						cm = knownMetricGroups.get(id);
 					} else {
-						plugin.complainToChatOrConsole(Level.WARNING, p, "Unknown module id: " + id);
-						return;
+						plugin.getLogger().warning("Unknown module id: " + id);
+						/* Failed to initialize, returning true */
+						return true;
 					}
 
 					try {
-						registerModuleWithLock(cm.getConstructor(PluginMain.class).newInstance(this.plugin));
-					} catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+						registerModuleWithLock(
+								cm.getConstructor(PluginMain.class).newInstance(this.plugin));
+					} catch (InstantiationException | IllegalAccessException |
+					         InvocationTargetException |
 					         NoSuchMethodException e) {
 						StringWriter sw = new StringWriter();
 						PrintWriter pw = new PrintWriter(sw);
 						e.printStackTrace(pw);
 						String message = "Cannot instantiate updater id " + id + "\n" + sw;
-						plugin.complainToChatOrConsole(Level.SEVERE, p, message);
+						plugin.getLogger().severe(message);
+						/* Cannot call constructor, returning true */
+						return true;
 					}
-				}
-		);
+
+					/* Initialization successful */
+					return false;
+				})
+				.count();
+
+		if (mInitFail > 0) {
+			this.plugin.complainToChatOrConsole(Level.WARNING, p, mInitFail + "modules failed to initialize.");
+		}
 
 		/* For enabled components call configure() */
 		List<PluggableModule> failed =
 				modules.values().stream()
-				       .filter(m -> !m.configure(retrieveConfigSection(m)))
+				       .filter(m -> {
+						   boolean ret = m.configure(retrieveConfigSection(m));
+						   if (!ret) {
+							   this.plugin.getLogger().severe("Cannot configure module " + m.id());
+						   }
+						   return !ret;
+				       })
 				       .toList(); /* Warn on stuff that failed configure() */
 		failed.forEach(m -> {
-			plugin.complainToChatOrConsole(Level.SEVERE, p, "Cannot configure module " + m.id());
 			modules.remove(m.id());
 		});
+		if (!failed.isEmpty()) {
+			this.plugin.complainToChatOrConsole(Level.WARNING, p, failed.size() + "modules failed to configure.");
+		}
 		modules.values().forEach(PluggableModule::start);
-		configurationLock.unlock();
 
 		/* Load global updater preference in `options.global` */
 		{
@@ -163,8 +185,12 @@ public class UpdaterManager implements Runnable {
 			}
 			this.updateIntervalTicks = plugin.getConfig().getInt("options.global.scrape-interval-ticks");
 			String message = "Update Interval: every " + this.updateIntervalTicks + " ticks";
-			plugin.complainToChatOrConsole(Level.INFO, p, message);
+			plugin.getLogger().info(message);
 		}
+
+		startBackgroundTaskWithLock();
+
+		configurationLock.unlock();
 	}
 
 	/**
@@ -189,8 +215,7 @@ public class UpdaterManager implements Runnable {
 		configurationLock.unlock();
 	}
 
-	public void start() {
-		configurationLock.lock();
+	private void startBackgroundTaskWithLock() {
 		if (updaterTaskId == null) {
 			updaterTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(this.plugin, this, 0, updateIntervalTicks);
 			if (updaterTaskId == -1) {
@@ -198,15 +223,24 @@ public class UpdaterManager implements Runnable {
 				updaterTaskId = null;
 			}
 		}
+	}
+
+	private void stopBackgroundTaskWithLock() {
+		if (updaterTaskId != null) {
+			Bukkit.getScheduler().cancelTask(updaterTaskId);
+			updaterTaskId = null;
+		}
+	}
+
+	public void start() {
+		configurationLock.lock();
+		startBackgroundTaskWithLock();
 		configurationLock.unlock();
 	}
 
 	public void stop() {
 		configurationLock.lock();
-		if (updaterTaskId != null) {
-			Bukkit.getScheduler().cancelTask(updaterTaskId);
-			updaterTaskId = null;
-		}
+		stopBackgroundTaskWithLock();
 		configurationLock.unlock();
 	}
 }
