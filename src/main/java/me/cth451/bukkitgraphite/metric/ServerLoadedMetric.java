@@ -1,9 +1,11 @@
 package me.cth451.bukkitgraphite.metric;
 
+import com.google.common.collect.ImmutableList;
 import me.cth451.bukkitgraphite.PluginMain;
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import me.cth451.bukkitgraphite.metric.model.MetricGroup;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
@@ -32,17 +34,15 @@ public class ServerLoadedMetric extends MetricGroup {
 	@Override
 	public @NotNull List<MetricEntry> scrape() {
 		List<MetricEntry> results = new LinkedList<>();
+		List<World> worlds = ImmutableList.copyOf(Bukkit.getWorlds());
 		Stream<MetricEntry> entityCount =
-				Bukkit.getWorlds()
-				      .stream()
+				worlds.stream()
 				      .map(w -> assemble(ENTITY_LOADED, w.getName(), w.getEntities().size()));
 		Stream<MetricEntry> chunkCount =
-				Bukkit.getWorlds()
-				      .stream()
+				worlds.stream()
 				      .map(w -> assemble(CHUNK_LOADED, w.getName(), w.getLoadedChunks().length));
 		Stream<MetricEntry> pinnedChunkCount =
-				Bukkit.getWorlds()
-				      .stream()
+				worlds.stream()
 				      .map(w -> assemble(CHUNK_PINNED, w.getName(), w.getForceLoadedChunks().size()));
 		results.addAll(entityCount.toList());
 		results.addAll(chunkCount.toList());

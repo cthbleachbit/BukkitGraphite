@@ -5,7 +5,7 @@ import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Scrape and dump serialized stats to console
@@ -18,7 +18,7 @@ public class ConsoleUpdater extends Updater {
 	}
 
 	@Override
-	public boolean sendUpdates(@NotNull List<MetricEntry> entries) {
+	public boolean sendUpdates(@NotNull Collection<MetricEntry> entries) {
 		entries.forEach(e -> plugin.getLogger().info(e.toString()));
 		return true;
 	}

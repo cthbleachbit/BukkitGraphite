@@ -6,7 +6,7 @@ import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Bare minimum APIs defining interface to a logging protocol for use with some remote metric service
@@ -22,7 +22,7 @@ public abstract class Updater extends PluggableModule {
 	 * @param entryList Collected metrics to send
 	 * @return whether update to remote logging service
 	 */
-	public abstract boolean sendUpdates(@NotNull List<MetricEntry> entryList);
+	public abstract boolean sendUpdates(@NotNull Collection<MetricEntry> entryList);
 
 	@Override
 	public abstract @NotNull String name();

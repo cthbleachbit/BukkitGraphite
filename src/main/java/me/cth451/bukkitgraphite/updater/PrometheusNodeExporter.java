@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.net.InetAddress;
-import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -75,7 +75,7 @@ public class PrometheusNodeExporter extends Updater {
 	 * @return whether enqueue is successful.
 	 */
 	@Override
-	public boolean sendUpdates(@NotNull List<MetricEntry> entryList) {
+	public boolean sendUpdates(@NotNull Collection<MetricEntry> entryList) {
 		return this.stagingMetric.addAll(entryList);
 	}
 

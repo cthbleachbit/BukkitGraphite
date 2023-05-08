@@ -19,6 +19,10 @@
             <id>papermc</id>
             <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
+        <repository>
+            <id>MG-Dev Jenkins CI Maven Repository</id>
+            <url>https://ci.mg-dev.eu/plugin/repository/everything</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -32,6 +36,7 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>5.9.0</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>io.prometheus</groupId>
@@ -44,6 +49,12 @@
             <artifactId>simpleclient_pushgateway</artifactId>
             <version>0.16.0</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.bergerkiller.bukkit</groupId>
+            <artifactId>BKCommonLib</artifactId>
+            <version>1.19.2-v2</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -61,6 +72,33 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.4.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <createDependencyReducedPom>true</createDependencyReducedPom>
+                    <relocations>
+                        <relocation>
+                            <pattern>io.prometheus</pattern>
+                            <shadedPattern>me.cth451.io.prometheus</shadedPattern>
+                        </relocation>
+                    </relocations>
+                    <artifactSet>
+                        <includes>
+                            <include>io.prometheus:*</include>
+                        </includes>
+                    </artifactSet>
+                </configuration>
             </plugin>
         </plugins>
     </build>

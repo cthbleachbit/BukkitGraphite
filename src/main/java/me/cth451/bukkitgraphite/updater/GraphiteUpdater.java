@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
+import java.util.Collection;
 
 /**
  * Graphite plaintext TCP push protocol
@@ -23,7 +23,7 @@ public class GraphiteUpdater extends Updater {
 	 * @param entryList metric entries to upload
 	 * @return a string with multiple lines that can be submitted to a Graphite backend
 	 */
-	private String prepareEntriesForUpload(List<MetricEntry> entryList) {
+	private String prepareEntriesForUpload(Collection<MetricEntry> entryList) {
 		return String.join("\n",
 		                   entryList.stream()
 		                            .parallel()
@@ -81,7 +81,7 @@ public class GraphiteUpdater extends Updater {
 	}
 
 	@Override
-	public boolean sendUpdates(@NotNull List<MetricEntry> entryList) {
+	public boolean sendUpdates(@NotNull Collection<MetricEntry> entryList) {
 		if (this.host == null || this.port == 0) {
 			return true;
 		}

@@ -1,5 +1,6 @@
 package me.cth451.bukkitgraphite.metric;
 
+import com.google.common.collect.ImmutableList;
 import me.cth451.bukkitgraphite.PluginMain;
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import me.cth451.bukkitgraphite.metric.model.MetricGroup;
@@ -35,19 +36,19 @@ public class PlayersActiveMetric extends MetricGroup {
 
 	@Override
 	public @NotNull List<MetricEntry> scrape() {
+		List<Player> players = ImmutableList.copyOf(Bukkit.getOnlinePlayers());
 		/* Account for online players */
 		Map<MetricPath, Double> playerCount =
-				Bukkit.getOnlinePlayers()
-				      .stream()
-				      .collect(
-						      Collectors.groupingBy(
-								      p -> pathFromActivePlayer("player.active", p),
-								      Collectors.reducing(0.0d, p -> 1.0d, Double::sum)
-						      )
-				      );
+				players.stream()
+				       .collect(
+						       Collectors.groupingBy(
+								       p -> pathFromActivePlayer("player.active", p),
+								       Collectors.reducing(0.0d, p -> 1.0d, Double::sum)
+						       )
+				       );
 
 		/* Account for empty entries */
-		for (World w : Bukkit.getWorlds()) {
+		for (World w : ImmutableList.copyOf(Bukkit.getWorlds())) {
 			for (GameMode gm : GameMode.values()) {
 				MetricPath key = pathFromWorldAndGameMode("player.active", w, gm);
 				if (!playerCount.containsKey(key)) {
@@ -57,7 +58,7 @@ public class PlayersActiveMetric extends MetricGroup {
 		}
 
 		/* Count number of server operators online */
-		long ops = Bukkit.getOnlinePlayers().stream().filter(Player::isOp).count();
+		long ops = players.stream().filter(Player::isOp).count();
 		playerCount.put(new MetricPath("player.op", null), (double) ops);
 
 		return playerCount.entrySet().stream()

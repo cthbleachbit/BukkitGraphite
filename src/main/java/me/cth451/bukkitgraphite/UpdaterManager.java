@@ -12,26 +12,31 @@ import me.cth451.bukkitgraphite.updater.Updater;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 
-public class UpdaterManager implements Runnable {
+public class UpdaterManager {
 
 	private final PluginMain plugin;
-	private final ReentrantLock configurationLock;
-	private final HashMap<String, PluggableModule> modules;
+	private final ReentrantLock configurationLock = new ReentrantLock();
+	private final HashMap<String, PluggableModule> modules = new HashMap<>();
+	private final ConcurrentLinkedQueue<Collection<MetricEntry>> updateQueue = new ConcurrentLinkedQueue<>();
 	private int updateIntervalTicks = 20;
-	private Integer updaterTaskId = null;
+	private BukkitTask scrapeTask = null;
+	private BukkitTask updateTask = null;
 
 	private static final Map<String, Class<? extends Updater>> knownUpdaters =
 			Map.ofEntries(
@@ -48,8 +53,6 @@ public class UpdaterManager implements Runnable {
 			);
 
 	public UpdaterManager(PluginMain plugin) {
-		this.configurationLock = new ReentrantLock();
-		this.modules = new HashMap<>();
 		this.plugin = plugin;
 	}
 
@@ -119,7 +122,7 @@ public class UpdaterManager implements Runnable {
 
 		configurationLock.lock();
 
-		stopBackgroundTaskWithLock();
+		stopWithLock();
 
 		long mInitFail = modulesToEnable
 				.parallelStream()
@@ -163,11 +166,11 @@ public class UpdaterManager implements Runnable {
 		List<PluggableModule> failed =
 				modules.values().stream()
 				       .filter(m -> {
-						   boolean ret = m.configure(retrieveConfigSection(m));
-						   if (!ret) {
-							   this.plugin.getLogger().severe("Cannot configure module " + m.id());
-						   }
-						   return !ret;
+					       boolean ret = m.configure(retrieveConfigSection(m));
+					       if (!ret) {
+						       this.plugin.getLogger().severe("Cannot configure module " + m.id());
+					       }
+					       return !ret;
 				       })
 				       .toList(); /* Warn on stuff that failed configure() */
 		failed.forEach(m -> {
@@ -188,16 +191,15 @@ public class UpdaterManager implements Runnable {
 			plugin.getLogger().info(message);
 		}
 
-		startBackgroundTaskWithLock();
+		startWithLock();
 
 		configurationLock.unlock();
 	}
 
 	/**
-	 * Repeating routine that generate one round of update.
+	 * To be called synchronously - scape one round of update and append to sending queue.
 	 */
-	@Override
-	public void run() {
+	public void scrape() {
 		configurationLock.lock();
 		List<MetricEntry> entries = modules.values().stream()
 		                                   .filter(MetricGroup.class::isInstance)
@@ -205,42 +207,91 @@ public class UpdaterManager implements Runnable {
 		                                   .map(MetricGroup::scrape) /* Collect stats for all registered metric */
 		                                   .flatMap(List::stream) /* Merge the list together */
 		                                   .toList();
-		modules.values().stream()
-		       .parallel()
-		       .filter(Updater.class::isInstance)
-		       .map(Updater.class::cast)
-		       .map(e -> Map.entry(e, e.sendUpdates(entries))) /* Execute stat sender */
-		       .filter(e -> !e.getValue()) /* Find ones that failed to update */
-		       .forEach(e -> plugin.getLogger().warning(e.getKey().name() + " has failed!"));
 		configurationLock.unlock();
+		this.updateQueue.add(entries);
 	}
 
-	private void startBackgroundTaskWithLock() {
-		if (updaterTaskId == null) {
-			updaterTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(this.plugin, this, 0, updateIntervalTicks);
-			if (updaterTaskId == -1) {
-				plugin.getLogger().severe("Cannot start metric update task!");
-				updaterTaskId = null;
-			}
+	/**
+	 * Called async or sync. Send updates to the server
+	 */
+	public void update() {
+		Collection<MetricEntry> shard;
+		while ((shard = this.updateQueue.poll()) != null) {
+			Collection<MetricEntry> finalShard = shard;
+			modules.values().stream()
+			       .parallel()
+			       .filter(Updater.class::isInstance)
+			       .map(Updater.class::cast)
+			       .map(e -> Map.entry(e, e.sendUpdates(finalShard))) /* Execute stat sender */
+			       .filter(e -> !e.getValue()) /* Find ones that failed to update */
+			       .forEach(e -> plugin.getLogger().warning(e.getKey().name() + " has failed!"));
 		}
 	}
 
-	private void stopBackgroundTaskWithLock() {
-		if (updaterTaskId != null) {
-			Bukkit.getScheduler().cancelTask(updaterTaskId);
-			updaterTaskId = null;
+	/**
+	 * Repeating routine that generate one round of update.
+	 */
+	public Runnable getSyncScrapeTask() {
+		class SyncScrapeTask implements Runnable {
+			private final UpdaterManager manager;
+
+			SyncScrapeTask(UpdaterManager manager) {
+				this.manager = manager;
+			}
+
+			@Override
+			public void run() {
+				this.manager.scrape();
+			}
+		}
+		return new SyncScrapeTask(this);
+	}
+
+	public Runnable getAsyncUpdateTask() {
+		class AsyncUpdateTask implements Runnable {
+			private final UpdaterManager manager;
+
+			AsyncUpdateTask(UpdaterManager manager) {
+				this.manager = manager;
+			}
+
+			@Override
+			public void run() {
+				this.manager.update();
+			}
+		}
+		return new AsyncUpdateTask(this);
+	}
+
+	private void startWithLock() {
+		if (scrapeTask == null) {
+			scrapeTask = Bukkit.getScheduler().runTaskTimer(this.plugin, this.getSyncScrapeTask(), 0, updateIntervalTicks);
+		}
+		if (updateTask == null) {
+			updateTask = Bukkit.getScheduler().runTaskTimerAsynchronously(this.plugin, this.getAsyncUpdateTask(), 0 ,updateIntervalTicks);
+		}
+	}
+
+	private void stopWithLock() {
+		if (scrapeTask != null) {
+			Bukkit.getScheduler().cancelTask(scrapeTask.getTaskId());
+			scrapeTask = null;
+		}
+		if (updateTask != null) {
+			Bukkit.getScheduler().cancelTask(updateTask.getTaskId());
+			updateTask = null;
 		}
 	}
 
 	public void start() {
 		configurationLock.lock();
-		startBackgroundTaskWithLock();
+		startWithLock();
 		configurationLock.unlock();
 	}
 
 	public void stop() {
 		configurationLock.lock();
-		stopBackgroundTaskWithLock();
+		stopWithLock();
 		configurationLock.unlock();
 	}
 }
