@@ -1,5 +1,5 @@
 name: 'BukkitGraphite'
-version: 0.0.1
+version: 0.0.2
 author: 'cth451'
 description: 'Graphite protocol agent for Bukkit based Minecraft server'
 main: me.cth451.bukkitgraphite.PluginMain
