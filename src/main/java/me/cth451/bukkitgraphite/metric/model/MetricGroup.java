@@ -11,6 +11,15 @@ import java.util.List;
  * Base class describing a bunch of metric keys logically collected and grouped together
  */
 public abstract class MetricGroup extends PluggableModule {
+	/**
+	 * Whether this metric group has been properly initialized
+	 */
+	private boolean up = true;
+
+	/**
+	 * Constructor
+	 * @param plugin plugin registered
+	 */
 	protected MetricGroup(PluginMain plugin) {
 		super(plugin);
 	}
@@ -52,10 +61,17 @@ public abstract class MetricGroup extends PluggableModule {
 		return true;
 	}
 
+	/**
+	 * Register any event handlers or background threads here.
+	 */
 	@Override
 	public void start() {
 	}
 
+	/**
+	 * Release any resources this metric group instance is currently using to prepare for a reload.
+	 * Subclasses should implement this function if they need to clean up after themselves, say stop event handlers etc.
+	 */
 	@Override
 	public void halt() {
 	}

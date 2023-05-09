@@ -9,6 +9,7 @@ metric-groups:
   player-active: true
   server-chunk-entity: true
   server-tps: true
+  server-login: true
 
 # Options section
 options:
@@ -32,3 +33,4 @@ options:
     player-active:
     server-chunk-entity:
     server-tps:
+    server-login:

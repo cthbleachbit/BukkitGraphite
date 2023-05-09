@@ -1,9 +1,6 @@
 package me.cth451.bukkitgraphite;
 
-import me.cth451.bukkitgraphite.metric.JavaRuntimeMetric;
-import me.cth451.bukkitgraphite.metric.PlayersActiveMetric;
-import me.cth451.bukkitgraphite.metric.ServerLoadedMetric;
-import me.cth451.bukkitgraphite.metric.ServerTpsMetric;
+import me.cth451.bukkitgraphite.metric.*;
 import me.cth451.bukkitgraphite.metric.model.MetricEntry;
 import me.cth451.bukkitgraphite.metric.model.MetricGroup;
 import me.cth451.bukkitgraphite.updater.ConsoleUpdater;
@@ -49,7 +46,8 @@ public class UpdaterManager {
 					Map.entry(JavaRuntimeMetric.ID, JavaRuntimeMetric.class),
 					Map.entry(PlayersActiveMetric.ID, PlayersActiveMetric.class),
 					Map.entry(ServerLoadedMetric.ID, ServerLoadedMetric.class),
-					Map.entry(ServerTpsMetric.ID, ServerTpsMetric.class)
+					Map.entry(ServerTpsMetric.ID, ServerTpsMetric.class),
+					Map.entry(ServerLoginMetric.ID, ServerLoginMetric.class)
 			);
 
 	public UpdaterManager(PluginMain plugin) {
